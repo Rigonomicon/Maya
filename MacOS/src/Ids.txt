@@ -1,0 +1,38 @@
+// This plug-in is part of a rigging package known as The "Bacon-Strip Rig"
+// Bacon-Strip ID Block is : 0x0012a940 - 0x0012aa3f
+
+0x0012a940 DEA2E8690150 baconFatBone
+0x0012a941 DEA2E8690151 baconFatLine
+0x0012a942 DEA2E8690152 baconFatRibbon
+0x0012a943 DEA2E8690153 baconFatArc
+
+0x0012a950 DEA2E8690146 baconAlign
+0x0012a951 DEA2E8690147 baconLookAt
+0x0012a952 DEA2E8690141 baconRoll
+0x0012a953 DEA2E8690148 baconTransformDecompose
+0x0012a954 DEA2E8690149 bacon2BoneIK
+0x0012a955 DEA2E8690145 baconRibbon
+0x0012a956 DEA2E8690144 baconSlidingPivot
+0x0012a957 DEA2E8690143 baconArc
+0x0012a958 DEA2E8690140 baconOffset
+0x0012a959 DEA2E8690139 bacon3BoneIK
+0x0012a960 BAC00012A960 baconDualHinge
+0x0012a961 BAC00012A961 baconBlend
+0x0012a962 BAC00012A962 baconMatrixCompose
+0x0012a963 BAC00012A963 baconMatrixDecompose
+0x0012a964 BAC00012A964 baconPreheat
+0x0012a965 BAC00012A965 baconUVProjection
+0x0012a966 BAC00012A966 baconBrisket
+
+0x0012aa00 MAYA API PY baconRig
+0x0012aa01 MAYA API PY baconBits
+0x0012aa02 MAYA API PY baconViseme
+
+
+
+
+
+
+
+
+
