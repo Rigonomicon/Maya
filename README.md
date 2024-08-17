@@ -10,14 +10,5 @@ As for scripting, we have decided to rewrite our tools to adhere to Maya.cmds me
 
 Additionally we have included Akasakisan’s boneDynamicsNode plugin with the Rigonomicon installation. This is a great plugin that allows us to have effective and simple physics applied to joints. Both boneDynamicsNode and Bacon-Strip have MIT licenses. This means that you can use them for any project for free, even if you make money from doing so. We only ask that you give credit for the tools you use and to not pass them off as your own.
 
-The Rigonomicom tools uses boneDynamicsNode under its MIT license.
+The Rigonomicom uses boneDynamicsNode under its MIT license.
 https://github.com/akasaki1211/boneDynamicsNode
-
-
-MIT License - 2017-2024
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  DEALINGS IN THE SOFTWARE.
