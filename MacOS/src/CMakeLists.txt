@@ -160,7 +160,6 @@ build_plugin()
 project(baconShapeRibbon)
 set(PROJECT_NAME baconShapeRibbon)
 set(SOURCE_FILES
-   baconMath.h
    baconShapeRibbon.cpp
 )
 build_plugin()
@@ -201,7 +200,7 @@ build_plugin()
 
 
 #-----------------------------
-# boneDynamicsNode
+# boneDynamicsNode - Akasakisan
 project(boneDynamicsNode)
 set(SOURCE_FILES
    boneDynamicsNode.h

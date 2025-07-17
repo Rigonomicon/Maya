@@ -1,10 +1,10 @@
 // This plug-in is part of a rigging package known as The "Bacon-Strip Rig"
 // Bacon-Strip ID Block is : 0x0012a940 - 0x0012aa3f
 
-0x0012a940 DEA2E8690150 baconFatBone
-0x0012a941 DEA2E8690151 baconFatLine
-0x0012a942 DEA2E8690152 baconFatRibbon
-0x0012a943 DEA2E8690153 baconFatArc
+0x0012a940 DEA2E8690150 baconShapeBone
+0x0012a941 DEA2E8690151 baconShapeLine
+0x0012a942 DEA2E8690152 baconShapeRibbon
+0x0012a943 DEA2E8690153 baconShapeArc - defunct
 
 0x0012a950 DEA2E8690146 baconAlign
 0x0012a951 DEA2E8690147 baconLookAt
@@ -23,16 +23,17 @@
 0x0012a964 BAC00012A964 baconPreheat
 0x0012a965 BAC00012A965 baconUVProjection
 0x0012a966 BAC00012A966 baconBrisket
+0x0012a967 BAC00012A967 baconBSpline
 
 0x0012aa00 MAYA API PY baconRig
 0x0012aa01 MAYA API PY baconBits
 0x0012aa02 MAYA API PY baconViseme
-
-
-
-
-
-
-
-
+0x0012aa03 MAYA API PY baconCircularContact
+0x0012aa04 MAYA API PY baconOnDemand
+0x0012aa05 MAYA API PY baconIKControl
+0x0012aa06 MAYA API PY baconFingerFans
+0x0012aa07 MAYA API PY baconAkasakiRadius
+0x0012aa08 MAYA API PY baconSubTarget
+0x0012aa09 MAYA API PY baconFlipbook
+0x0012aa0a MAYA API PY baconPoke
 

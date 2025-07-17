@@ -70,7 +70,6 @@
 #include <maya/MDoubleArray.h>
 #include <maya/MScriptUtil.h>
 
-#include "baconMath.h"
  
 class baconBlend : public MPxNode
 {
@@ -164,6 +163,108 @@ MObject		baconBlend::blendPosition;
 baconBlend::baconBlend() {}
 baconBlend::~baconBlend() {}
 
+MMatrix setRow( MMatrix matrix, MVector newVector, const int row)
+{
+	MMatrix returnTM = matrix;
+	returnTM[row][0] = newVector[0];
+	returnTM[row][1] = newVector[1];
+	returnTM[row][2] = newVector[2];
+	return returnTM;
+}
+
+MMatrix transMatrix(MVector pos)
+{
+	MMatrix returnTM = setRow(MMatrix(), pos, 3);
+	return returnTM;
+}
+
+MMatrix FloatMatrixToMatrix(MFloatMatrix fTM)
+{
+	MMatrix returnTM = MMatrix();
+	returnTM = setRow(returnTM, MVector(fTM[0][0], fTM[0][1], fTM[0][2]), 0);
+	returnTM = setRow(returnTM, MVector(fTM[1][0], fTM[1][1], fTM[1][2]), 1);
+	returnTM = setRow(returnTM, MVector(fTM[2][0], fTM[2][1], fTM[2][2]), 2);
+	returnTM = setRow(returnTM, MVector(fTM[3][0], fTM[3][1], fTM[3][2]), 3);
+	return returnTM;
+}
+
+static MMatrix normalizeMatrix(MMatrix _matrix)
+{
+	MMatrix returnTM = _matrix;
+	setRow(returnTM, (MVector(returnTM[0][0], returnTM[0][1], returnTM[0][2])).normal(), 0);
+	setRow(returnTM, (MVector(returnTM[1][0], returnTM[1][1], returnTM[1][2])).normal(), 1);
+	setRow(returnTM, (MVector(returnTM[2][0], returnTM[2][1], returnTM[2][2])).normal(), 2);
+	return returnTM;
+}
+
+double quatDot(MQuaternion q1, MQuaternion q2)
+{
+	return (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
+}
+
+MQuaternion baconSlerp(MQuaternion a, MQuaternion b, double t)
+{
+	double omega = quatDot(a, b);
+	if (omega < 0.0)
+	{
+		omega = quatDot(a, b.negateIt());
+	}
+	double theta = acos(omega);
+	double epsilon = sin(theta);
+
+	double w1(0.0);
+	double w2(0.0);
+
+	if (epsilon > 0.0001)
+	{
+		w1 = sin(theta * (1.0 - t)) / epsilon;
+		w2 = sin(theta * t) / epsilon;
+	}
+	else
+	{
+		w1 = 1.0 - t;
+		w2 = t;
+	}
+
+	MQuaternion aa(a.scaleIt(w1));
+	MQuaternion bb(b.scaleIt(w2));
+	return aa + bb;
+}
+
+
+MQuaternion MSlerp(MQuaternion qa, MQuaternion qb, double t) 
+{
+	// quaternion to return
+	MQuaternion qm(MQuaternion::identity);
+
+	double cosHalfTheta = qa.w * qb.w + qa.x * qb.x + qa.y * qb.y + qa.z * qb.z;
+	if (abs(cosHalfTheta) >= 1.0) {
+		qm.w = qa.w; qm.x = qa.x; qm.y = qa.y; qm.z = qa.z;
+		return qm;
+	}
+	// Calculate temporary values.
+	double halfTheta = acos(cosHalfTheta);
+	double sinHalfTheta = sqrt(1.0 - cosHalfTheta*cosHalfTheta);
+	if (abs(sinHalfTheta) < 0.001) { 
+		qm.w = (qa.w * 0.5 + qb.w * 0.5);
+		qm.x = (qa.x * 0.5 + qb.x * 0.5);
+		qm.y = (qa.y * 0.5 + qb.y * 0.5);
+		qm.z = (qa.z * 0.5 + qb.z * 0.5);
+		return qm;
+	}
+	double ratioA = sin((1.0 - t) * halfTheta) / sinHalfTheta;
+	double ratioB = sin(t * halfTheta) / sinHalfTheta;
+
+	//calculate Quaternion.
+	qm.w = (qa.w * ratioA + qb.w * ratioB);
+	qm.x = (qa.x * ratioA + qb.x * ratioB);
+	qm.y = (qa.y * ratioA + qb.y * ratioB);
+	qm.z = (qa.z * ratioA + qb.z * ratioB);
+	return qm;
+}
+
+
+
 MStatus baconBlend::compute( const MPlug& plug, MDataBlock& data )
 {
 	
@@ -252,8 +353,8 @@ MStatus baconBlend::compute( const MPlug& plug, MDataBlock& data )
 		MTransformationMatrix TM2(WM2);
 		MQuaternion BlendQuat = slerp(TM1.rotation(), TM2.rotation(), BW);
 		MTransformationMatrix worldTM(BlendQuat);
-		MVector worldPos = (TM1.translation(MSpace::kWorld) * (1.0f - BW)) + (TM2.translation(MSpace::kWorld) * BW);
-		worldTM.setTranslation(worldPos, MSpace::kWorld);
+		MVector worldPos = (TM1.translation(MSpace::kTransform) * (1.0f - BW)) + (TM2.translation(MSpace::kTransform) * BW);
+		worldTM.setTranslation(worldPos, MSpace::kTransform);
 
 		// remove jointOrient and parentTM and set.
 		MMatrix ipTM = FloatMatrixToMatrix(pFM);

@@ -1,0 +1,76 @@
+
+
+Install the new Maya and download the devkit separately.
+Uncompress the devkit files into /Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.202X/ 
+Uncompressed the Bacon_MACOS_CMAKE.zip into
+/Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.2026/devkit/plug-ins/bacon
+Do this for all Maya versions.
+Open terminal in bacon folder, then type "sh " and drag and drop run_cmake_maya2026.sh into bacon terminal.
+
+
+———————————————————————————————————————————
+IMPORTANT THINGS TO REMEMBER FOR MAC OS
+
+Copy Paste = command+c and command+v
+Delete file = command+backspace (it’s also called the delete button like delete but the other delete button doesn’t work :S )
+Got to another desktop = control+left-right-arrows (window management is best with this.) 
+How to manage windows = control+up arrow = mission control
+How to jump words = option+arrows
+Make Folder = mkdir MyFolder
+cd .. will back the directory up by one
+
+———————————————————————————————————————————
+IMPORTANT FOLDERS
+
+Maya Location:
+/Applications/Autodesk/maya2024
+
+Where the source is and where it compiles to (via terminal at location):
+/Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase/devkit/plug-ins/bacon
+
+Where it needs to go for Maya to load:
+/Users/recombobulator/Library/Preferences/Autodesk/maya/modules
+
+DevkitBase you download from Autodesk should go:
+/Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.202x
+
+
+———————————————————————————————————————————
+EXAMPLE STEPS TO BUILD 2024
+ Step 1 - Open the terminal in the right folder. Use “finder” to go here: /Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.2024/devkit/plug-ins/bacon Right-click on bacon in path bar, open a terminal here.
+
+
+Step 2 - Set Environment paths to Maya and Devkit.
+export DEVKIT_LOCATION=/Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.2024
+export MAYA_LOCATION=/Applications/Autodesk/maya2024
+Check it, by running this command: env
+
+Step 3 - Launch CMake commands to compile into debug folder.
+cmake -H. -Bbuild.2024 -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64"
+cmake --build build.2024
+
+
+
+———————————————————————————————————————————
+QUICK PASTE:
+
+
+export DEVKIT_LOCATION=/Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.2024
+export MAYA_LOCATION=/Applications/Autodesk/maya2024
+cmake -H. -Bbuild.2024 -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64"
+cmake --build build.2024
+
+export DEVKIT_LOCATION=/Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.2025
+export MAYA_LOCATION=/Applications/Autodesk/maya2025
+cmake -H. -Bbuild.2025 -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64"
+cmake --build build.2025
+
+rm -rf build.2026
+Mkdir build.2026
+export DEVKIT_LOCATION=/Users/recombobulator/Projects/Rigonomicon/CMAKE/devkitbase.2026
+export MAYA_LOCATION=/Applications/Autodesk/maya2026
+cmake -H. -Bbuild.2026 -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64"
+cmake --build build.2026
+
+***IMPORTANT***
+Or make them .sh files and open terminal in bacon folder, then type "sh " and drag and drop file into bacon terminal.

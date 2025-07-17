@@ -67,8 +67,6 @@
 #include <maya/MDoubleArray.h>
 #include <maya/MScriptUtil.h>
 
-#include "baconMath.h"
-
  
 class baconMatrixCompose : public MPxNode
 {
@@ -118,6 +116,67 @@ MObject		baconMatrixCompose::offsetParentMatrix;
 
 baconMatrixCompose::baconMatrixCompose() {}
 baconMatrixCompose::~baconMatrixCompose() {}
+
+static MMatrix setRow( MMatrix matrix, MVector newVector, const int row)
+{
+	MMatrix returnTM = matrix;
+	returnTM[row][0] = newVector[0];
+	returnTM[row][1] = newVector[1];
+	returnTM[row][2] = newVector[2];
+	return returnTM;
+}
+
+static MMatrix transMatrix(MVector pos)
+{
+	MMatrix returnTM = setRow(MMatrix(), pos, 3);
+	return returnTM;
+}
+
+static MMatrix scaleMatrix(MVector sca)
+{
+	MMatrix returnTM = MMatrix();
+	returnTM = setRow(returnTM, MVector(sca[0], 0.0, 0.0), 0);
+	returnTM = setRow(returnTM, MVector(0.0, sca[1], 0.0), 1);
+	returnTM = setRow(returnTM, MVector(0.0, 0.0, sca[2]), 2);
+	returnTM = setRow(returnTM, MVector(0.0, 0.0, 0.0), 3);
+	return returnTM;
+}
+
+
+
+static MMatrix FloatMatrixToMatrix(MFloatMatrix fTM)
+{
+	MMatrix returnTM = MMatrix();
+	returnTM = setRow(returnTM, MVector(fTM[0][0], fTM[0][1], fTM[0][2]), 0);
+	returnTM = setRow(returnTM, MVector(fTM[1][0], fTM[1][1], fTM[1][2]), 1);
+	returnTM = setRow(returnTM, MVector(fTM[2][0], fTM[2][1], fTM[2][2]), 2);
+	returnTM = setRow(returnTM, MVector(fTM[3][0], fTM[3][1], fTM[3][2]), 3);
+	return returnTM;
+}
+
+static MFloatMatrix MMatrixToFloatMatrix(MMatrix MM)
+{
+	MFloatMatrix returnTM = MFloatMatrix();
+	returnTM[0][0] = float(MM[0][0]);
+	returnTM[0][1] = float(MM[0][1]);
+	returnTM[0][2] = float(MM[0][2]);
+	returnTM[0][3] = float(MM[0][3]);
+	returnTM[1][0] = float(MM[1][0]);
+	returnTM[1][1] = float(MM[1][1]);
+	returnTM[1][2] = float(MM[1][2]);
+	returnTM[1][3] = float(MM[1][3]);
+	returnTM[2][0] = float(MM[2][0]);
+	returnTM[2][1] = float(MM[2][1]);
+	returnTM[2][2] = float(MM[2][2]);
+	returnTM[2][3] = float(MM[2][3]);
+	returnTM[3][0] = float(MM[3][0]);
+	returnTM[3][1] = float(MM[3][1]);
+	returnTM[3][2] = float(MM[3][2]);
+	returnTM[3][3] = float(MM[3][3]);
+	return returnTM;
+}
+
+
 
 MStatus baconMatrixCompose::compute( const MPlug& plug, MDataBlock& data )
 {
