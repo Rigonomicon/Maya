@@ -59,9 +59,6 @@
 
 #include <stdio.h>
 
-#include "baconMath.h"
-
-
 using namespace MHWRender;
 
 
@@ -103,6 +100,7 @@ public:
 	static MObject splineThickness;
 	static MObject ContrappostoLength;
 	static MObject ContrappostoOffset;
+	static MObject separateTangents;
 
 	static MObject startWorldMatrix;
 	static MObject endWorldMatrix;
@@ -161,11 +159,48 @@ MObject	baconShapeRibbon::showTangents;
 MObject	baconShapeRibbon::showSpline;
 MObject	baconShapeRibbon::showContrapposto;
 MObject	baconShapeRibbon::splineThickness;
+MObject	baconShapeRibbon::separateTangents;
 
 MObject	baconShapeRibbon::startWorldMatrix;
 MObject	baconShapeRibbon::endWorldMatrix;
 MObject	baconShapeRibbon::startTangentWorldMatrix;
 MObject	baconShapeRibbon::endTangentWorldMatrix;
+
+MMatrix setRow(MMatrix matrix, MVector newVector, const int row)
+{
+	MMatrix returnTM = matrix;
+	returnTM[row][0] = newVector[0];
+	returnTM[row][1] = newVector[1];
+	returnTM[row][2] = newVector[2];
+	return returnTM;
+}
+
+MMatrix transMatrix(MVector pos)
+{
+	MMatrix returnTM = setRow(MMatrix(), pos, 3);
+	return returnTM;
+}
+
+MVector Bezier4Interpolation(MVector P0, MVector P1, MVector P2, MVector P3, float u)
+{
+	float u2(u * u);
+	float u3(u2 * u);
+	return (P0 + (-P0 * 3.0f + u * (3.0f * P0 - P0 * u)) * u
+		+ (3.0f * P1 + u * (-6.0f * P1 + P1 * 3.0f * u)) * u
+		+ (P2 * 3.0f - P2 * 3.0f * u) * u2 + P3 * u3);
+}
+
+MMatrix FloatMatrixToMatrix(MFloatMatrix fTM)
+{
+	MMatrix returnTM = MMatrix();
+	returnTM = setRow(returnTM, MVector(fTM[0][0], fTM[0][1], fTM[0][2]), 0);
+	returnTM = setRow(returnTM, MVector(fTM[1][0], fTM[1][1], fTM[1][2]), 1);
+	returnTM = setRow(returnTM, MVector(fTM[2][0], fTM[2][1], fTM[2][2]), 2);
+	returnTM = setRow(returnTM, MVector(fTM[3][0], fTM[3][1], fTM[3][2]), 3);
+	return returnTM;
+}
+
+
 
 
 MStatus baconShapeRibbon::initialize()
@@ -242,6 +277,18 @@ MStatus baconShapeRibbon::initialize()
 	nAttr.setStorable(true);
 	stat = addAttribute(showContrapposto);
 	if (!stat) { stat.perror("addAttribute"); return stat; }
+
+	// separateTangents
+	separateTangents = nAttr.create("separateTangents", "septan", MFnNumericData::kBoolean);
+	nAttr.setDefault(true);
+	nAttr.setKeyable(true);
+	nAttr.setReadable(true);
+	nAttr.setHidden(false);
+	nAttr.setWritable(true);
+	nAttr.setStorable(true);
+	stat = addAttribute(separateTangents);
+	if (!stat) { stat.perror("addAttribute"); return stat; }
+
 
 	// Line Thickness
 	splineThickness = wAttr.create("lineThickness", "lt", MFnNumericData::kDouble);
@@ -565,6 +612,9 @@ MUserData* transformDrawOverride::prepareForDraw(
 	MPlug showContrappostoPlug(obj, baconShapeRibbon::showContrapposto);
 	tdData->fShowContrapposto = showContrappostoPlug.asBool();
 
+	MPlug separateTangentsPlug(obj, baconShapeRibbon::separateTangents);
+	bool separateTangentsValue = separateTangentsPlug.asBool();
+
 
 	// Bezier 4 points
 	MPlug plugContrappostoLength(obj, baconShapeRibbon::ContrappostoLength);
@@ -603,23 +653,46 @@ MUserData* transformDrawOverride::prepareForDraw(
 	MMatrix cposto2BTM = (transMatrix(MVector(cpOffset, 0, -1.0 * cpLength)) * endTM) * thisTM.inverse();
 	tdData->fContrappossto2B = MVector(cposto2BTM[3][0], cposto2BTM[3][1], cposto2BTM[3][2]);
 
+	if (separateTangentsValue == true)
+	{
+		MPlug startTangentPlugtTM(obj, baconShapeRibbon::startTangentWorldMatrix);
+		MDataHandle startTangentTMhandle = startTangentPlugtTM.asMDataHandle();
+		MFloatMatrix startTangentTMValue = startTangentTMhandle.asFloatMatrix();
+		MMatrix startTangentTM = FloatMatrixToMatrix(startTangentTMValue);
+		MTransformationMatrix startTangentLocalTM = startTangentTM * thisTM.inverse();
+		MVector startTangentVec = startTangentLocalTM.getTranslation(MSpace::kWorld);
+		tdData->fStartTangentPos = startTangentVec;
+
+		MPlug endTangentPlugtTM(obj, baconShapeRibbon::endTangentWorldMatrix);
+		MDataHandle endTangentTMhandle = endTangentPlugtTM.asMDataHandle();
+		MFloatMatrix endTangentTMValue = endTangentTMhandle.asFloatMatrix();
+		MMatrix endTangentTM = FloatMatrixToMatrix(endTangentTMValue);
+		MTransformationMatrix endTangentLocalTM = endTangentTM * thisTM.inverse();
+		MVector endTangentVec = endTangentLocalTM.getTranslation(MSpace::kWorld);
+		tdData->fEndTangentPos = endTangentVec;
 
 
-	MPlug startTangentPlugtTM(obj, baconShapeRibbon::startTangentWorldMatrix);
-	MDataHandle startTangentTMhandle = startTangentPlugtTM.asMDataHandle();
-	MFloatMatrix startTangentTMValue = startTangentTMhandle.asFloatMatrix();
-	MMatrix startTangentTM = FloatMatrixToMatrix(startTangentTMValue);
-	MTransformationMatrix startTangentLocalTM = startTangentTM * thisTM.inverse();
-	MVector startTangentVec = startTangentLocalTM.getTranslation(MSpace::kWorld);
-	tdData->fStartTangentPos = startTangentVec;
+	}
+	else
+	{
+		MVector starPos(startTM[3][0], startTM[3][1], startTM[3][2]);
+		MVector startXDir(startTM[0][0], startTM[0][1], startTM[0][2]);
+		MVector worldStartTangentPos = (starPos + startXDir);
+		MMatrix worldStartTangentTM = transMatrix(worldStartTangentPos);
+		MTransformationMatrix localStartTangentMTM = worldStartTangentTM * thisTM.inverse();
+		MVector localStartTagentPos = localStartTangentMTM.getTranslation(MSpace::kWorld);
+		tdData->fStartTangentPos = localStartTagentPos;
 
-	MPlug endTangentPlugtTM(obj, baconShapeRibbon::endTangentWorldMatrix);
-	MDataHandle endTangentTMhandle = endTangentPlugtTM.asMDataHandle();
-	MFloatMatrix endTangentTMValue = endTangentTMhandle.asFloatMatrix();
-	MMatrix endTangentTM = FloatMatrixToMatrix(endTangentTMValue);
-	MTransformationMatrix endTangentLocalTM = endTangentTM * thisTM.inverse();
-	MVector endTangentVec = endTangentLocalTM.getTranslation(MSpace::kWorld);
-	tdData->fEndTangentPos = endTangentVec;
+		MVector endPos(endTM[3][0], endTM[3][1], endTM[3][2]);
+		MVector endXDir(endTM[0][0], endTM[0][1], endTM[0][2]);
+		MVector worldEndTangentPos = (endPos - endXDir);
+		MMatrix worldEndTangentTM = transMatrix(worldEndTangentPos);
+		MTransformationMatrix localEndTangentMTM = worldEndTangentTM * thisTM.inverse();
+		MVector localEndTagentPos = localEndTangentMTM.getTranslation(MSpace::kWorld);
+		tdData->fEndTangentPos = localEndTagentPos;
+
+	}
+
 
 
 	//MObject oTM = plugTM.asMObject();
@@ -756,6 +829,7 @@ void transformDrawOverride::addUIDrawables(
 	MPointArray endTangentLine;
 	endTangentLine.append(tdData->fEndPos);
 	endTangentLine.append(tdData->fEndTangentPos);
+
 
 	MPointArray bezierLine;
 	bezierLine.append(tdData->fStartPos);

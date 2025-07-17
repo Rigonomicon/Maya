@@ -70,8 +70,6 @@
 #include <maya/MDoubleArray.h>
 #include <maya/MScriptUtil.h>
 
-#include "baconMath.h"
-
 
 class baconRoll : public MPxNode
 {
@@ -125,8 +123,52 @@ MObject		baconRoll::rollRotation2;
 MObject		baconRoll::rollRotation3;
 MObject		baconRoll::rollRotation4;
 
+
 baconRoll::baconRoll() {}
 baconRoll::~baconRoll() {}
+
+MMatrix setRow(MMatrix matrix, MVector newVector, const int row)
+{
+	MMatrix returnTM = matrix;
+	returnTM[row][0] = newVector[0];
+	returnTM[row][1] = newVector[1];
+	returnTM[row][2] = newVector[2];
+	return returnTM;
+}
+
+MMatrix transMatrix(MVector pos)
+{
+	MMatrix returnTM = setRow(MMatrix(), pos, 3);
+	return returnTM;
+}
+
+
+MVector getRow(MMatrix TM, int row)
+{
+	return (MVector(TM[row][0], TM[row][1], TM[row][2]));
+}
+
+MMatrix FloatMatrixToMatrix(MFloatMatrix fTM)
+{
+	MMatrix returnTM = MMatrix();
+	returnTM = setRow(returnTM, MVector(fTM[0][0], fTM[0][1], fTM[0][2]), 0);
+	returnTM = setRow(returnTM, MVector(fTM[1][0], fTM[1][1], fTM[1][2]), 1);
+	returnTM = setRow(returnTM, MVector(fTM[2][0], fTM[2][1], fTM[2][2]), 2);
+	returnTM = setRow(returnTM, MVector(fTM[3][0], fTM[3][1], fTM[3][2]), 3);
+	return returnTM;
+}
+
+MMatrix matrix3(MVector row1, MVector row2, MVector row3, MVector row4)
+{
+	MMatrix returnTM = MMatrix();
+	returnTM = setRow(returnTM, row1, 0);
+	returnTM = setRow(returnTM, row2, 1);
+	returnTM = setRow(returnTM, row3, 2);
+	returnTM = setRow(returnTM, row4, 3);
+	return returnTM;
+}
+
+
 
 MStatus baconRoll::compute(const MPlug& plug, MDataBlock& data)
 {

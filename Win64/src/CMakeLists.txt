@@ -164,7 +164,6 @@ install(TARGETS ${PROJECT_NAME} ${MAYA_TARGET_TYPE} DESTINATION plug-ins/${MAYA_
 # baconRibbon
 project(baconRibbon VERSION 1.0 DESCRIPTION "Rigonomicon.com - your source for learning how to rig.")
 set(SOURCE_FILES
-	"baconMath.h"
 	"baconRibbon.cpp"
 )
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
@@ -181,7 +180,7 @@ install(TARGETS ${PROJECT_NAME} ${MAYA_TARGET_TYPE} DESTINATION plug-ins/${MAYA_
 project(baconRoll VERSION 1.0 DESCRIPTION "Rigonomicon.com - your source for learning how to rig.")
 set(SOURCE_FILES
 	"baconMath.h"
-	"baconRibbon.cpp"
+	"baconRoll.cpp"
 
 )
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
@@ -229,7 +228,6 @@ install(TARGETS ${PROJECT_NAME} ${MAYA_TARGET_TYPE} DESTINATION plug-ins/${MAYA_
 # baconShapeRibbon
 project(baconShapeRibbon VERSION 1.0 DESCRIPTION "Rigonomicon.com - your source for learning how to rig.")
 set(SOURCE_FILES
-	"baconMath.h"
 	"baconShapeRibbon.cpp"
 )
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
@@ -279,6 +277,23 @@ project(baconUVProjection VERSION 1.0 DESCRIPTION "Rigonomicon.com - your source
 set(SOURCE_FILES
 	"baconMath.h"
 	"baconUVProjection.cpp"
+)
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+target_link_libraries(${PROJECT_NAME} PRIVATE Maya::Maya)
+target_include_directories(${PROJECT_NAME} 
+    PRIVATE Maya::Maya
+    PUBLIC "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+MAYA_PLUGIN(${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME} ${MAYA_TARGET_TYPE} DESTINATION plug-ins/${MAYA_VERSION})
+
+###############################################################################
+# boneDynamicsNode - AKASAKI
+project(boneDynamicsNode VERSION 1.0 DESCRIPTION "Rigonomicon.com - your source for learning how to rig.")
+set(SOURCE_FILES
+	"pluginMain.cpp"
+	"boneDynamicsNode.h"
+	"boneDynamicsNode.cpp"
 )
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE Maya::Maya)
